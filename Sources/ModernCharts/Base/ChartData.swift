@@ -59,6 +59,11 @@ public class DatapointSynthezier {
 public struct SynthezierProperties {
     var fillAllXAxisLabels: Bool = true
     var ascendingDates: Bool = true
+    
+    public init(fillAllXAxisLabels: Bool, ascendingDates: Bool) {
+        self.fillAllXAxisLabels = fillAllXAxisLabels
+        self.ascendingDates = ascendingDates
+    }
 }
 
 

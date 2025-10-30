@@ -7,29 +7,46 @@
 
 import SwiftUI
 
-struct LineChart: View {
+public struct LineChart: View {
     
-    @Binding var data: ChartData
+    @Binding private var data: ChartData
     
-    @State private var dragLocation:CGPoint = .zero
+    @State private var dragLocation: CGPoint = .zero
     @State private var closestPoint: CGPoint = .zero
     @State private var indicatorLocation: CGPoint = .zero
-    @State private var hideHorizontalLines: Bool = false
     @State private var currentDataNumber: Double = 0
     @State private var currentlyDraggedIndex: Int = -1
     @State private var opacity: Double = 0
     
-    var chartHeight: CGFloat
+    @State private var hideHorizontalLines: Bool
+    private var chartHeight: CGFloat
+    private var xAxisPadding: CGFloat
+    private var yAxisPadding: CGFloat
+    private var yAxisWidth: CGFloat
+    private var xAxisHeight: CGFloat
+    private var valueSpecifier: String
     
-    var xAxisPadding: CGFloat = 20
-    var yAxisPadding: CGFloat = 10
+    public init(
+        data: Binding<ChartData>,
+        hideHorizontalLines: Bool = false,
+        chartHeight: CGFloat,
+        xAxisPadding: CGFloat = 20,
+        yAxisPadding: CGFloat = 10,
+        yAxisWidth: CGFloat = 50,
+        xAxisHeight: CGFloat = 14,
+        valueSpecifier: String = "%.2f"
+    ) {
+        self._data = data
+        self.hideHorizontalLines = hideHorizontalLines
+        self.chartHeight = chartHeight
+        self.xAxisPadding = xAxisPadding
+        self.yAxisPadding = yAxisPadding
+        self.yAxisWidth = yAxisWidth
+        self.xAxisHeight = xAxisHeight
+        self.valueSpecifier = valueSpecifier
+    }
     
-    var yAxisWidth: CGFloat = 50
-    var xAxisHeight: CGFloat = 14
-    
-    var valueSpecifier: String = "%.2f"
-    
-    var body: some View {
+    public var body: some View {
         VStack() {
             HStack(spacing: yAxisPadding) {
                 LineYAxis(
@@ -116,7 +133,7 @@ struct LineChart: View {
         
     }
     
-    func getClosestDataPoint(toPoint: CGPoint, width: CGFloat, height: CGFloat) -> CGPoint {
+    private func getClosestDataPoint(toPoint: CGPoint, width: CGFloat, height: CGFloat) -> CGPoint {
         let values = self.data.values()
         guard values.count > 1 else { return .zero }
 
@@ -141,11 +158,11 @@ struct LineChart: View {
         return CGPoint(x: x, y: y)
     }
     
-    func getMagnifierXOffset(containerWidth: CGFloat) -> CGFloat {
+    private func getMagnifierXOffset(containerWidth: CGFloat) -> CGFloat {
         return self.dragLocation.x + (-containerWidth / 2)
     }
     
-    func isDragInsideChartBounds(dragLocationX: CGFloat, frame: CGRect) -> Bool {
+    private func isDragInsideChartBounds(dragLocationX: CGFloat, frame: CGRect) -> Bool {
         if dragLocationX < frame.minX || dragLocationX > frame.maxX {
             return false
         }

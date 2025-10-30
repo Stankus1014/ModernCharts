@@ -30,7 +30,7 @@ public enum DefaultModernChartColors {
     
 }
 
-internal struct ChartColors {
+struct ChartColors {
     static let orangeStart: Color = Color(hexString: "#EC2301")
     static let orangeEnd: Color = Color(hexString: "#FF782C")
 }

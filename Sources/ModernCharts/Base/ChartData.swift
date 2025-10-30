@@ -8,31 +8,60 @@ import SwiftUI
 import Foundation
 
 public class ChartData: ObservableObject, Identifiable {
-    @Published var points: [(String,Double)]
-    var valuesGiven: Bool = false
+    @Published var dataPoints: ModernChartDataPoints
     var ID = UUID()
     
-    public init<N: BinaryFloatingPoint>(points:[N]) {
-        self.points = points.map{("", Double($0))}
-    }
-    public init<N: BinaryInteger>(values:[(String,N)]){
-        self.points = values.map{($0.0, Double($0.1))}
-        self.valuesGiven = true
-    }
-    public init<N: BinaryFloatingPoint>(values:[(String,N)]){
-        self.points = values.map{($0.0, Double($0.1))}
-        self.valuesGiven = true
-    }
-    public init<N: BinaryInteger>(numberValues:[(N,N)]){
-        self.points = numberValues.map{(String($0.0), Double($0.1))}
-        self.valuesGiven = true
-    }
-    public init<N: BinaryFloatingPoint & LosslessStringConvertible>(numberValues:[(N,N)]){
-        self.points = numberValues.map{(String($0.0), Double($0.1))}
-        self.valuesGiven = true
+    public init(dataPoints: ModernChartDataPoints) {
+        self.dataPoints = dataPoints
     }
     
-    public func onlyPoints() -> [Double] {
-        return self.points.map{ $0.1 }
+    public func values() -> [Double] {
+        return self.dataPoints.map{ $0.1 }
+    }
+    
+    func getDate(index: Int) -> Date {
+        return self.dataPoints[index].0
     }
 }
+
+public class DatapointSynthezier {
+    
+    private var properties: SynthezierProperties
+    
+    public init(properties: SynthezierProperties) {
+        self.properties = properties
+    }
+    
+    public func createDataPoints(dates: [Date], values: [Double]) -> ChartData {
+        return createDataPoints(data: Array(zip(dates, values)))
+    }
+    
+    public func createDataPoints(data: [(Date, Double)]) -> ChartData {
+        return ChartData(dataPoints: self.sortData(data: data))
+    }
+    
+    private func sortData(data: [(Date, Double)]) -> [(Date, Double)] {
+        
+        if self.properties.ascendingDates {
+            return data.sorted { lhs, rhs in
+                lhs.0 < rhs.0
+            }
+        } else {
+            return data.sorted { lhs, rhs in
+                lhs.0 > rhs.0
+            }
+        }
+        
+    }
+    
+}
+
+public struct SynthezierProperties {
+    var fillAllXAxisLabels: Bool = true
+    var ascendingDates: Bool = true
+}
+
+
+// String: X-Axis Label
+// Double: Y-Axis Value
+public typealias ModernChartDataPoints = [(Date, Double)]

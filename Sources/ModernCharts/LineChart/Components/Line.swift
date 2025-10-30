@@ -19,18 +19,18 @@ public struct Line: View {
     @State var showBackground: Bool = true
     
     var index:Int = 0
-    let padding:CGFloat = 30
+    let padding:CGFloat = 0
     var curvedLines: Bool = true
     var stepWidth: CGFloat {
-        if data.points.count < 2 {
+        if data.dataPoints.count < 2 {
             return 0
         }
-        return frame.size.width / CGFloat(data.points.count-1)
+        return frame.size.width / CGFloat(data.dataPoints.count-1)
     }
     var stepHeight: CGFloat {
         var min: Double?
         var max: Double?
-        let points = self.data.onlyPoints()
+        let points = self.data.values()
         if minDataValue != nil && maxDataValue != nil {
             min = minDataValue!
             max = maxDataValue!
@@ -50,11 +50,11 @@ public struct Line: View {
         return 0
     }
     var path: Path {
-        let points = self.data.onlyPoints()
+        let points = self.data.values()
         return curvedLines ? Path.quadCurvedPathWithPoints(points: points, step: CGPoint(x: stepWidth, y: stepHeight), globalOffset: minDataValue) : Path.linePathWithPoints(points: points, step: CGPoint(x: stepWidth, y: stepHeight))
     }
     var closedPath: Path {
-        let points = self.data.onlyPoints()
+        let points = self.data.values()
         return curvedLines ? Path.quadClosedCurvedPathWithPoints(points: points, step: CGPoint(x: stepWidth, y: stepHeight), globalOffset: minDataValue) : Path.closedLinePathWithPoints(points: points, step: CGPoint(x: stepWidth, y: stepHeight))
     }
     
@@ -99,7 +99,7 @@ public struct Line: View {
 struct Line_Previews: PreviewProvider {
     static var previews: some View {
         GeometryReader{ geometry in
-            Line(data: ChartData(points: [12,-230,10,54]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
+            Line(data: ChartData(dataPoints: PreviewData.weekOfBodyweight), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
         }.frame(width: 320, height: 160)
     }
 }

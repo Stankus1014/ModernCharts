@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct LineChart: View {
+public struct LineChart: View {
     
-    @Binding var data: ChartData
+    @Binding public var data: ChartData
     
     @State private var dragLocation:CGPoint = .zero
     @State private var closestPoint: CGPoint = .zero
@@ -19,17 +19,17 @@ struct LineChart: View {
     @State private var currentlyDraggedIndex: Int = -1
     @State private var opacity: Double = 0
     
-    var chartHeight: CGFloat
+    public var chartHeight: CGFloat
     
-    var xAxisPadding: CGFloat = 20
-    var yAxisPadding: CGFloat = 10
+    public var xAxisPadding: CGFloat = 20
+    public var yAxisPadding: CGFloat = 10
     
-    var yAxisWidth: CGFloat = 50
-    var xAxisHeight: CGFloat = 14
+    public var yAxisWidth: CGFloat = 50
+    public var xAxisHeight: CGFloat = 14
     
-    var valueSpecifier: String = "%.2f"
+    public var valueSpecifier: String = "%.2f"
     
-    var body: some View {
+    public var body: some View {
         VStack() {
             HStack(spacing: yAxisPadding) {
                 LineYAxis(
@@ -116,7 +116,7 @@ struct LineChart: View {
         
     }
     
-    func getClosestDataPoint(toPoint: CGPoint, width: CGFloat, height: CGFloat) -> CGPoint {
+    private func getClosestDataPoint(toPoint: CGPoint, width: CGFloat, height: CGFloat) -> CGPoint {
         let values = self.data.values()
         guard values.count > 1 else { return .zero }
 
@@ -141,11 +141,11 @@ struct LineChart: View {
         return CGPoint(x: x, y: y)
     }
     
-    func getMagnifierXOffset(containerWidth: CGFloat) -> CGFloat {
+    private func getMagnifierXOffset(containerWidth: CGFloat) -> CGFloat {
         return self.dragLocation.x + (-containerWidth / 2)
     }
     
-    func isDragInsideChartBounds(dragLocationX: CGFloat, frame: CGRect) -> Bool {
+    private func isDragInsideChartBounds(dragLocationX: CGFloat, frame: CGRect) -> Bool {
         if dragLocationX < frame.minX || dragLocationX > frame.maxX {
             return false
         }

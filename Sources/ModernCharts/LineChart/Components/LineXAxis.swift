@@ -10,16 +10,16 @@ import SwiftUI
 struct LineXAxis: View {
     @Binding var data: ChartData
     @Binding var currentlyDraggedIndex: Int
-    var numberOfXAxisLabels: Int = 7
+    var numberOfXAxisLabels: Int
     var labelFormat: XAxisLabelFormat
 
     var body: some View {
         GeometryReader { proxy in
             let width = proxy.size.width
-            let step = width / CGFloat(max(numberOfXAxisLabels - 1, 1))
+            let step = width / CGFloat(max(data.dataPoints.count - 1, 1))
 
             ZStack {
-                ForEach(0..<numberOfXAxisLabels, id: \.self) { index in
+                ForEach(0..<self.calculateNumberOfLabels(), id: \.self) { index in
                     XAxisLabel(
                         currentlyDraggedIndex: self.$currentlyDraggedIndex,
                         date: self.data.getDate(index: index),
@@ -34,6 +34,12 @@ struct LineXAxis: View {
         }
     }
     
+    
+    private func calculateNumberOfLabels() -> Int {
+        
+        return min(self.data.dataPoints.count, self.numberOfXAxisLabels)
+        
+    }
     
 }
 

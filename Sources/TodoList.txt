@@ -1,0 +1,13 @@
+//
+//  TodoList.txt
+//  ModernCharts
+//
+//  Created by William Stankus on 10/30/25.
+//
+
+// Issues:
+// ==============
+//
+// 1. When values of a chart are all the same, the height is one, there's only 1 y-axis label, etc...
+// 2. Crashes when data points doesn't match xAxisLabel count
+//

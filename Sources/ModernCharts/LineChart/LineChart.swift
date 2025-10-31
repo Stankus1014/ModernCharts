@@ -25,6 +25,7 @@ public struct LineChart: View {
     private var yAxisWidth: CGFloat
     private var xAxisHeight: CGFloat
     private var valueSpecifier: String
+    private var numXLabels: Int
     
     public init(
         data: Binding<ChartData>,
@@ -34,7 +35,8 @@ public struct LineChart: View {
         yAxisPadding: CGFloat = 10,
         yAxisWidth: CGFloat = 50,
         xAxisHeight: CGFloat = 14,
-        valueSpecifier: String = "%.2f"
+        valueSpecifier: String = "%.2f",
+        numXLabels: Int = 7
     ) {
         self._data = data
         self.hideHorizontalLines = hideHorizontalLines
@@ -44,6 +46,7 @@ public struct LineChart: View {
         self.yAxisWidth = yAxisWidth
         self.xAxisHeight = xAxisHeight
         self.valueSpecifier = valueSpecifier
+        self.numXLabels = numXLabels
     }
     
     public var body: some View {
@@ -122,8 +125,8 @@ public struct LineChart: View {
             LineXAxis(
                 data: $data,
                 currentlyDraggedIndex: self.$currentlyDraggedIndex,
-                numberOfXAxisLabels: 7,
-                labelFormat: .dayOfWeek
+                numberOfXAxisLabels: self.numXLabels,
+                labelFormat: .dayOfWeek,
             )
                 .frame(height: xAxisHeight)
                 .padding(.top, xAxisPadding)
@@ -173,9 +176,10 @@ public struct LineChart: View {
 
 #Preview {
     LineChart(
-        data: .constant(ChartData(dataPoints: PreviewData.weekOfBodyweight)),
+        data: .constant(ChartData(dataPoints: [(Date(),212.2)])),
         chartHeight: 300.0,
-        valueSpecifier: "%.1f"
+        valueSpecifier: "%.1f",
+        numXLabels: 1
     )
     .padding(20)
 }

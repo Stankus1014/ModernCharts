@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-public struct MagnifierRect: View {
+struct MagnifierRect: View {
     @Binding var currentNumber: Double
     var valueSpecifier:String
     
     @Environment(\.modernChartStyle) private var style: ModernChartStyle
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     
-    public var body: some View {
+    var body: some View {
         ZStack{
             Text("\(self.currentNumber, specifier: valueSpecifier)")
                 .font(.system(size: 18, weight: .bold))

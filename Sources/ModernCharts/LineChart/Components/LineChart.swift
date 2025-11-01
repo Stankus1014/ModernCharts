@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct LineChart: View {
+struct LineChart: View {
     
     @Binding private var data: ChartData
     
@@ -17,8 +17,8 @@ public struct LineChart: View {
     @State private var currentDataNumber: Double = 0
     @State private var currentlyDraggedIndex: Int = -1
     @State private var opacity: Double = 0
-    
     @State private var hideHorizontalLines: Bool
+    
     private var chartHeight: CGFloat
     private var xAxisPadding: CGFloat
     private var yAxisPadding: CGFloat
@@ -26,17 +26,19 @@ public struct LineChart: View {
     private var xAxisHeight: CGFloat
     private var valueSpecifier: String
     private var numXLabels: Int
+    private var xAxisLabelFormat: XAxisLabelFormat
     
-    public init(
+    init(
         data: Binding<ChartData>,
-        hideHorizontalLines: Bool = false,
+        hideHorizontalLines: Bool,
         chartHeight: CGFloat,
-        xAxisPadding: CGFloat = 20,
-        yAxisPadding: CGFloat = 10,
-        yAxisWidth: CGFloat = 50,
-        xAxisHeight: CGFloat = 14,
-        valueSpecifier: String = "%.2f",
-        numXLabels: Int = 7
+        xAxisPadding: CGFloat,
+        yAxisPadding: CGFloat,
+        yAxisWidth: CGFloat,
+        xAxisHeight: CGFloat,
+        valueSpecifier: String,
+        numXLabels: Int,
+        xAxisLabelFormat: XAxisLabelFormat
     ) {
         self._data = data
         self.hideHorizontalLines = hideHorizontalLines
@@ -47,9 +49,11 @@ public struct LineChart: View {
         self.xAxisHeight = xAxisHeight
         self.valueSpecifier = valueSpecifier
         self.numXLabels = numXLabels
+        self.xAxisLabelFormat = xAxisLabelFormat
     }
     
-    public var body: some View {
+    var body: some View {
+        
         VStack() {
             HStack(spacing: yAxisPadding) {
                 LineYAxis(
@@ -91,6 +95,8 @@ public struct LineChart: View {
                                     return
                                 }
                                 
+                                if data.dataPoints.count == 1 { return }
+                                
                                 self.dragLocation = value.location
                                 self.indicatorLocation = CGPoint(x: max(value.location.x,0), y: 32)
                                 self.opacity = 1
@@ -126,7 +132,7 @@ public struct LineChart: View {
                 data: $data,
                 currentlyDraggedIndex: self.$currentlyDraggedIndex,
                 numberOfXAxisLabels: self.numXLabels,
-                labelFormat: .dayOfWeek,
+                labelFormat: self.xAxisLabelFormat,
             )
                 .frame(height: xAxisHeight)
                 .padding(.top, xAxisPadding)
@@ -172,14 +178,4 @@ public struct LineChart: View {
         
         return true
     }
-}
-
-#Preview {
-    LineChart(
-        data: .constant(ChartData(dataPoints: [(Date(),212.2)])),
-        chartHeight: 300.0,
-        valueSpecifier: "%.1f",
-        numXLabels: 1
-    )
-    .padding(20)
 }

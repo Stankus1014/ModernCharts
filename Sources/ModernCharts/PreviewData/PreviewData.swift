@@ -29,4 +29,36 @@ class PreviewData {
         ].reversed()
     }
     
+    static var zeroDatapoints: ModernChartDataPoints {
+        return []
+    }
+    
+    static var oneDatapoint: ModernChartDataPoints {
+        return [(Date(), 212.32)]
+    }
+    
+    static var twoDatapoints: ModernChartDataPoints {
+        return [
+            (Date(), 212.32),
+            (Date(), 213.32)
+        ]
+    }
+    
+    static var threeDatapoints: ModernChartDataPoints {
+        return [
+            (Date(), 212.32),
+            (Date(), 213.32),
+            (Date(), 214.32),
+        ]
+    }
+    
+    static var fourDatapoints: ModernChartDataPoints {
+        return [
+            (Date(), 212.32),
+            (Date(), 213.32),
+            (Date(), 214.32),
+            (Date(), 215.32),
+        ]
+    }
+    
 }

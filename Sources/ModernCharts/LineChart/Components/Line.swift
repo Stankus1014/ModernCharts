@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct Line: View {
+struct Line: View {
     @Environment(\.modernChartStyle) private var style: ModernChartStyle
     @ObservedObject var data: ChartData
     @Binding var frame: CGRect
@@ -23,7 +23,7 @@ public struct Line: View {
     var curvedLines: Bool = true
     var stepWidth: CGFloat {
         if data.dataPoints.count < 2 {
-            return 0
+            return frame.size.width
         }
         return frame.size.width / CGFloat(data.dataPoints.count-1)
     }
@@ -38,7 +38,7 @@ public struct Line: View {
             min = minPoint
             max = maxPoint
         }else {
-            return 0
+            return frame.size.height
         }
         if let min = min, let max = max, min != max {
             if (min <= 0){
@@ -47,7 +47,7 @@ public struct Line: View {
                 return (frame.size.height-padding) / CGFloat(max - min)
             }
         }
-        return 0
+        return frame.size.height
     }
     var path: Path {
         let points = self.data.values()
@@ -58,33 +58,49 @@ public struct Line: View {
         return curvedLines ? Path.quadClosedCurvedPathWithPoints(points: points, step: CGPoint(x: stepWidth, y: stepHeight), globalOffset: minDataValue) : Path.closedLinePathWithPoints(points: points, step: CGPoint(x: stepWidth, y: stepHeight))
     }
     
-    public var body: some View {
+    var straightPath: Path {
+        return Path.straightLine(width: frame.width, height: frame.height)
+    }
+    
+    var body: some View {
         ZStack {
-            if(self.showFull && self.showBackground){
-                self.closedPath
-                    .fill(LinearGradient(gradient: Gradient(colors: [style.chartColor.endColor, .white]), startPoint: .bottom, endPoint: .top))
+            if data.dataPoints.count == 1 {
+                self.straightPath
+                    //.trim(from: 0, to: self.showFull ? 1:0)
+                    .stroke(LinearGradient(gradient: style.chartColor.getGradient(), startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
                     .rotationEffect(.degrees(180), anchor: .center)
                     .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
-                    .transition(.opacity)
-                    .animation(.easeIn(duration: 1.6))
-            }
-            self.path
-                .trim(from: 0, to: self.showFull ? 1:0)
-                .stroke(LinearGradient(gradient: style.chartColor.getGradient(), startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
-                .rotationEffect(.degrees(180), anchor: .center)
-                .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
-                .animation(Animation.easeOut(duration: 1.2).delay(Double(self.index)*0.4))
-                .onAppear {
-                    self.showFull = true
-            }
-            .onDisappear {
-                self.showFull = false
-            }
-            if(self.showIndicator) {
-                IndicatorPoint()
-                    .position(self.getClosestPointOnPath(touchLocation: self.touchLocation))
+                    .animation(Animation.easeOut(duration: 1.2).delay(Double(self.index)*0.4))
+                    .onAppear {
+                        self.showFull = true
+                    }
+            } else {
+                if(self.showFull && self.showBackground){
+                    self.closedPath
+                        .fill(LinearGradient(gradient: Gradient(colors: [style.chartColor.endColor, .white]), startPoint: .bottom, endPoint: .top))
+                        .rotationEffect(.degrees(180), anchor: .center)
+                        .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+                        .transition(.opacity)
+                        .animation(.easeIn(duration: 1.6))
+                }
+                self.path
+                    .trim(from: 0, to: self.showFull ? 1:0)
+                    .stroke(LinearGradient(gradient: style.chartColor.getGradient(), startPoint: .leading, endPoint: .trailing) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
                     .rotationEffect(.degrees(180), anchor: .center)
                     .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+                    .animation(Animation.easeOut(duration: 1.2).delay(Double(self.index)*0.4))
+                    .onAppear {
+                        self.showFull = true
+                }
+                .onDisappear {
+                    self.showFull = false
+                }
+                if(self.showIndicator) {
+                    IndicatorPoint()
+                        .position(self.getClosestPointOnPath(touchLocation: self.touchLocation))
+                        .rotationEffect(.degrees(180), anchor: .center)
+                        .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+                }
             }
         }
     }
@@ -99,7 +115,7 @@ public struct Line: View {
 struct Line_Previews: PreviewProvider {
     static var previews: some View {
         GeometryReader{ geometry in
-            Line(data: ChartData(dataPoints: PreviewData.weekOfBodyweight), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
+            Line(data: ChartData(dataPoints: PreviewData.oneDatapoint), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
         }.frame(width: 320, height: 160)
     }
 }

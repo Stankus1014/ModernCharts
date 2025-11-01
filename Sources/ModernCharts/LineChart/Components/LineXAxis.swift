@@ -2,7 +2,7 @@
 //  LineXAxis.swift
 //  ModernCharts
 //
-//  Created by William Stankus on 10/26/25.
+//  Created by William Stankus on 10/31/25.
 //
 
 import SwiftUI
@@ -15,22 +15,22 @@ struct LineXAxis: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let width = proxy.size.width
-            let step = width / CGFloat(max(data.dataPoints.count - 1, 1))
-
-            ZStack {
-                ForEach(0..<self.calculateNumberOfLabels(), id: \.self) { index in
-                    XAxisLabel(
+            HStack {
+                let numXAxisLabels = self.calculateNumberOfLabels()
+                ForEach(0..<numXAxisLabels, id: \.self) { index in
+                    XAxisLabelDynamic(
                         currentlyDraggedIndex: self.$currentlyDraggedIndex,
                         date: self.data.getDate(index: index),
                         index: index,
-                        xPosition: CGFloat(index) * step,
-                        yPosition: proxy.size.height / 2,
                         labelFormat: labelFormat
                     )
+                    
+                    if index != numXAxisLabels - 1 {
+                        Spacer()
+                    }
                 }
             }
-            .frame(width: width, height: proxy.size.height)
+            .frame(width: proxy.size.width, height: proxy.size.height)
         }
     }
     
@@ -43,14 +43,12 @@ struct LineXAxis: View {
     
 }
 
-struct XAxisLabel: View {
+struct XAxisLabelDynamic: View {
     
     @Binding var currentlyDraggedIndex: Int
     
     var date: Date
     var index: Int
-    var xPosition: CGFloat
-    var yPosition: CGFloat
     var labelFormat: XAxisLabelFormat
     
     var body: some View {
@@ -59,47 +57,43 @@ struct XAxisLabel: View {
         
          Text(self.getXAxisLabel(date: date))
             .font(font)
-            .position(
-                x: xPosition,
-                y: yPosition
-            )
-            .frame(maxWidth: .infinity)
     }
     
     private func getXAxisLabel(date: Date) -> String {
-        
         let formatter = DateFormatter()
-        
-        switch self.labelFormat {
-        case .dayOfWeek:
-            formatter.dateFormat = "E"
-        case .day:
-            formatter.dateFormat = "d"
-        case .month:
-            formatter.dateFormat = "MMM"
-        case .year:
-            formatter.dateFormat = "yyyy"
-        }
-        
+        formatter.dateFormat = self.labelFormat.dateFormat
         return formatter.string(from: date)
     }
 }
-
-#Preview {
-    LineXAxis(
-        data: .constant(ChartData(dataPoints: PreviewData.weekOfBodyweight)),
-        currentlyDraggedIndex: .constant(1),
-        numberOfXAxisLabels: 7,
-        labelFormat: .dayOfWeek
-    )
-        .frame(height: 20)
-        .padding(50)
-}
-
 
 public enum XAxisLabelFormat {
     case dayOfWeek
     case day
     case month
     case year
+    case custom(format: String)
 }
+
+extension XAxisLabelFormat {
+    var dateFormat: String {
+        switch self {
+        case .dayOfWeek: return "E"
+        case .day: return "d"
+        case .month: return "MMM"
+        case .year: return "yyyy"
+        case .custom(let format): return format
+        }
+    }
+}
+
+#Preview {
+    LineXAxis(
+        data: .constant(ChartData(dataPoints: PreviewData.twoDatapoints)),
+        currentlyDraggedIndex: .constant(1),
+        numberOfXAxisLabels: 2,
+        labelFormat: .dayOfWeek
+    )
+    .frame(height: 14)
+    .padding(20)
+}
+

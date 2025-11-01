@@ -188,6 +188,18 @@ extension Path {
         return path
     }
     
+    static func straightLine(width: CGFloat, height: CGFloat) -> Path {
+        var path = Path()
+        
+        let p1 = CGPoint(x: 0, y: height / 2)
+        let p2 = CGPoint(x: width, y: height / 2)
+        
+        path.move(to: p1)
+        path.addLine(to: p2)
+        
+        return path
+    }
+    
 }
 
 extension CGPoint {

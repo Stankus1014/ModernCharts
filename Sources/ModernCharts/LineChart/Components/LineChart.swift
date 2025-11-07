@@ -85,34 +85,6 @@ struct LineChart: View {
                             maxDataValue: .constant(nil),
                             showBackground: false
                         )
-                        .gesture(DragGesture()
-                            .onChanged({ value in
-                                
-                                guard isDragInsideChartBounds(
-                                    dragLocationX: value.location.x,
-                                    frame: proxy.frame(in: .local)
-                                ) else {
-                                    return
-                                }
-                                
-                                if data.dataPoints.count == 1 { return }
-                                
-                                self.dragLocation = value.location
-                                self.indicatorLocation = CGPoint(x: max(value.location.x,0), y: 32)
-                                self.opacity = 1
-                                self.closestPoint = self.getClosestDataPoint(
-                                    toPoint: value.location,
-                                    width: proxy.size.width,
-                                    height: chartHeight
-                                )
-                                self.hideHorizontalLines = true
-                            })
-                                .onEnded({ value in
-                                    self.opacity = 0
-                                    self.currentlyDraggedIndex = -1
-                                    self.hideHorizontalLines = false
-                                })
-                        )
                         MagnifierRect(
                             currentNumber: self.$currentDataNumber,
                             valueSpecifier: self.valueSpecifier
@@ -124,6 +96,34 @@ struct LineChart: View {
                                 y: 14
                             )
                     }
+                    .gesture(DragGesture()
+                        .onChanged({ value in
+                            
+                            guard isDragInsideChartBounds(
+                                dragLocationX: value.location.x,
+                                frame: proxy.frame(in: .local)
+                            ) else {
+                                return
+                            }
+                            
+                            if data.dataPoints.count == 1 { return }
+                            
+                            self.dragLocation = value.location
+                            self.indicatorLocation = CGPoint(x: max(value.location.x,0), y: 32)
+                            self.opacity = 1
+                            self.closestPoint = self.getClosestDataPoint(
+                                toPoint: value.location,
+                                width: proxy.size.width,
+                                height: chartHeight
+                            )
+                            self.hideHorizontalLines = true
+                        })
+                            .onEnded({ value in
+                                self.opacity = 0
+                                self.currentlyDraggedIndex = -1
+                                self.hideHorizontalLines = false
+                            })
+                    )
                 }
             }
             .frame(height: chartHeight)

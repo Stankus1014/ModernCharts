@@ -12,6 +12,11 @@ public struct ModernChartColor: Sendable {
     var startColor: Color
     var endColor: Color
     
+    public init(startColor: Color, endColor: Color) {
+        self.startColor = startColor
+        self.endColor = endColor
+    }
+    
     func getGradient() -> Gradient {
         return Gradient(colors: [startColor, endColor])
     }

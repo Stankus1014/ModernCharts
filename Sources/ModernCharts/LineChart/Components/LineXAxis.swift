@@ -45,6 +45,7 @@ struct LineXAxis: View {
 
 struct XAxisLabelDynamic: View {
     
+    @Environment(\.modernChartStyle) private var style: ModernChartStyle
     @Binding var currentlyDraggedIndex: Int
     
     var date: Date
@@ -57,6 +58,7 @@ struct XAxisLabelDynamic: View {
         
          Text(self.getXAxisLabel(date: date))
             .font(font)
+            .foregroundStyle(style.textColor)
     }
     
     private func getXAxisLabel(date: Date) -> String {

@@ -96,6 +96,7 @@ struct LineChart: View {
                                 y: 14
                             )
                     }
+                    .contentShape(Rectangle())
                     .gesture(DragGesture()
                         .onChanged({ value in
                             
